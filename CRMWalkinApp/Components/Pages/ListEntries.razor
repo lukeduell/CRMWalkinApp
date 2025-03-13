@@ -1,0 +1,47 @@
+﻿@page "/list"
+@inject FirestoreService Firestore
+@using CRMWalkinApp.Models
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+<h3>List of Entries</h3>
+
+@if (_entries == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr><th>Name</th><th>Phone</th><th>Date</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var entry in _entries)
+        {
+            <tr>
+                <td>@entry.FirstAndLast</td>
+                <td>@entry.PhoneNumber</td>
+                <td>@entry.DateArrived.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <button @onclick="@(() => EditEntry(entry.Id))">Edit</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<CustomerModel> _entries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _entries = await Firestore.GetAllEntriesAsync();
+    }
+
+    private void EditEntry(string id)
+    {
+        NavigationManager.NavigateTo($"/edit/{id}");
+    }
+}

@@ -1,0 +1,51 @@
+﻿@page "/edit/{entryId}"
+@inject FirestoreService Firestore
+@inject NavigationManager NavigationManager
+@using CRMWalkinApp.Models
+@using CRMWalkinApp.Services
+
+<InputFile OnChange="HandleFileSelected" />
+
+@code {
+    [Parameter] public string entryId { get; set; }
+    private CustomerModel _entry;
+    private string DateArrivedString;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            using var ms = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(ms);
+            // Now ms contains the file's bytes. Upload them to Storage:
+            // e.g. using Google.Cloud.Storage.V1
+            // var storage = StorageClient.Create();
+            // storage.UploadObject("your-bucket", "someName.png", null, ms);
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // You need a FirestoreService.GetByIdAsync(...) method:
+        _entry = await Firestore.GetByIdAsync(entryId);
+        if (_entry != null)
+        {
+            DateArrivedString = _entry.DateArrived.ToString("yyyy-MM-dd");
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        if (DateTime.TryParse(DateArrivedString, out var date))
+            _entry.DateArrived = date;
+
+        await Firestore.UpdateEntryAsync(_entry);
+        NavigationManager.NavigateTo("/list");
+    }
+
+    private async Task DeleteEntry()
+    {
+        await Firestore.DeleteEntryAsync(entryId);
+        NavigationManager.NavigateTo("/list");
+    }
+}

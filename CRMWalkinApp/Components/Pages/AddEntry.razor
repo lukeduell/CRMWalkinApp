@@ -1,0 +1,45 @@
+﻿@page "/add"
+@inject FirestoreService Firestore
+@using CRMWalkinApp.Models
+@inject NavigationManager NavigationManager
+
+<h3>Add a New Entry</h3>
+
+<div>
+    <label>Name:</label>
+    <input @bind="NewEntry.FirstAndLast" />
+</div>
+<div>
+    <label>Phone:</label>
+    <input @bind="NewEntry.PhoneNumber" />
+</div>
+<div>
+    <label>Date Arrived:</label>
+    <input type="date" @bind="NewEntry.DateArrived" />
+</div>
+<div>
+    <label>Blast?</label>
+    <input type="checkbox" @bind="NewEntry.Blast" />
+</div>
+<!-- etc. for prime, color, status, line, notes, etc. -->
+
+<button @onclick="AddEntryToFirebase">Add</button>
+
+@code {
+    private CustomerModel NewEntry = new CustomerModel();
+    private string DateArrivedString;
+
+    private async Task AddEntryToFirebase()
+    {
+        // Convert your date string to a DateTime if needed:
+        if (DateTime.TryParse(DateArrivedString, out var date))
+        {
+            NewEntry.DateArrived = date;
+        }
+
+        await Firestore.AddEntryAsync(NewEntry);
+
+        // Maybe navigate back to the list:
+        NavigationManager.NavigateTo("/list");
+    }
+}
