@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/CRMWalkinApp/Keys/serviceAccount.json
+/CRMWalkinApp/appsettings.json
+/CRMWalkinApp/appsettings.Development.json
+/CRMWalkinApp/appsettings.json
+/CRMWalkinApp/appsettings.Development.json
+/CRMWalkinApp/Keys/serviceAccount.json
